@@ -22,7 +22,7 @@ function test(e) {
 }
 
 const hslFormat = computed(() => {
-    return `hsl(${props.hsl.h}deg ${props.hsl.s}% ${props.hsl.l}%)`
+    return `hsl(${props.hsl.h}deg 100% 50%)`
 })
 
 //v-bind(colorFromTemp)
