@@ -8,7 +8,6 @@ const color = defineModel()
 
 function changeHsl(args) {
     Object.assign(color.value, args)
-    console.log(color.value)
 }
 </script>
 

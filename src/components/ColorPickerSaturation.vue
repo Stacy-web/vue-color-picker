@@ -2,6 +2,7 @@
 import { ref, computed, defineEmits } from 'vue'
 
 const coordinates = ref([0, 0])
+const mousedown = ref(false)
 
 const props = defineProps({
     hsl: Object
@@ -10,27 +11,37 @@ const props = defineProps({
 const emit = defineEmits(['change-hsl'])
 
 function test(e) {
-    const saturationOffset = e.target.getBoundingClientRect()
+    if (mousedown.value) {
+        const saturationOffset = e.currentTarget.getBoundingClientRect()
 
-    coordinates.value[0] = Math.floor(e.clientX - saturationOffset.left)
-    coordinates.value[1] = Math.floor(e.clientY - saturationOffset.top)
+        coordinates.value[0] = Math.floor(e.clientX - saturationOffset.left)
+        coordinates.value[1] = Math.floor(e.clientY - saturationOffset.top)
 
-    const colorS = Math.floor((coordinates.value[0] / saturationOffset.width) * 100)
-    const colorL = Math.floor(50 - (coordinates.value[1] / saturationOffset.height) * 50)
+        const colorS = Math.floor((coordinates.value[0] / saturationOffset.width) * 100)
+        const colorL = Math.floor(50 - (coordinates.value[1] / saturationOffset.height) * 50)
 
-    emit('change-hsl', { s: colorS, l: colorL })
+        emit('change-hsl', { s: colorS, l: colorL })
+    }
 }
 
 const hslFormat = computed(() => {
     return `hsl(${props.hsl.h}deg 100% 50%)`
 })
-
-//v-bind(colorFromTemp)
 </script>
 
 <template>
-    {{ hslFormat }}
-    <div class="color-picker-saturation" @mousedown="test">
+    {{ coordinates }}
+    <div
+        class="color-picker-saturation"
+        @mousedown="
+            (e) => {
+                mousedown = true
+                test(e)
+            }
+        "
+        @mousemove="test"
+        @mouseup="mousedown = false"
+    >
         <span :style="`top: ${coordinates[1]}px; left: ${coordinates[0]}px`"></span>
     </div>
 </template>
@@ -59,7 +70,6 @@ const hslFormat = computed(() => {
         transform: translate(-50%, -50%);
         border: 2px solid #fff;
         box-shadow: 0px 0px 10px -2px #1f1f1f;
-        transition: 0.3s linear;
     }
 }
 </style>
